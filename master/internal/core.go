@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/csv"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -821,16 +820,16 @@ func updateClusterHeartbeat(ctx context.Context, db *db.PgDB) {
 	}
 }
 
-func (m *Master) postTaskLogs(c echo.Context) (interface{}, error) {
-	var logs []*model.TaskLog
-	if err := json.NewDecoder(c.Request().Body).Decode(&logs); err != nil {
-		return "", err
-	}
-	if err := m.taskLogBackend.AddTaskLogs(logs); err != nil {
-		return "", errors.Wrap(err, "receiving task logs")
-	}
-	return "", nil
-}
+// func (m *Master) postTaskLogs(c echo.Context) (interface{}, error) {
+// 	var logs []*model.TaskLog
+// 	if err := json.NewDecoder(c.Request().Body).Decode(&logs); err != nil {
+// 		return "", err
+// 	}
+// 	if err := m.taskLogBackend.AddTaskLogs(logs); err != nil {
+// 		return "", errors.Wrap(err, "receiving task logs")
+// 	}
+// 	return "", nil
+// }
 
 // Run causes the Determined master to connect the database and begin listening for HTTP requests.
 func (m *Master) Run(ctx context.Context) error {
@@ -1133,8 +1132,6 @@ func (m *Master) Run(ctx context.Context) error {
 	resourcesGroup.GET("/allocation/raw", m.getRawResourceAllocation)
 	resourcesGroup.GET("/allocation/allocations-csv", m.getResourceAllocations)
 	resourcesGroup.GET("/allocation/aggregated", m.getAggregatedResourceAllocation)
-
-	m.echo.POST("/task-logs", api.Route(m.postTaskLogs))
 
 	m.echo.Any("/debug/pprof/*", echo.WrapHandler(http.HandlerFunc(pprof.Index)))
 	m.echo.Any(

@@ -127,8 +127,8 @@ class LogShipper(threading.Thread):
     def ship(self) -> None:
         if len(self.logs) <= 0:
             return
-
-        api.post(self.master_url, "task-logs", self.logs)
+        print("Attempting to use entrich task logs")
+        api.post(self.master_url, "/api/v1/task-logs", self.logs)
         self.logs = []
 
 

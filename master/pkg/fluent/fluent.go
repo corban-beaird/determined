@@ -64,14 +64,13 @@ func makeOutputConfig(
 				tlsConfig.CertificateName = localhost
 			}
 		}
-
 		fmt.Fprintf(config, `
 [OUTPUT]
   Name http
   Match *
   Host %s
   Port %d
-  URI /task-logs
+  URI /api/v1/task-logs
   Header_tag X-Fluent-Tag
   Format json
   Json_date_key timestamp

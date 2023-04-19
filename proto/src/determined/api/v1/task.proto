@@ -22,6 +22,43 @@ message GetTaskResponse {
   determined.task.v1.Task task = 1;
 }
 
+// Request to PostTaskLogs
+message PostTaskLogsRequest {
+  // option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
+  //   json_schema: {
+  //     required: [ "id", "level", "log", "message", "task_id", "timestamp" ]
+  //   }
+  // };
+  // // The IDs of the logs.
+  // repeated string id = 1;
+  // // The timestamps of the logs.
+  // repeated google.protobuf.Timestamp timestamp = 2;
+  // // The flat version of the log that UIs have shown historically.
+  // repeated string message = 3 [deprecated = true];
+  // // The levels of the logs.
+  // repeated determined.log.v1.LogLevel level = 4;
+  // // The IDs of the tasks.
+  // repeated string task_id = 5;
+  // // The IDs of the allocations.
+  // repeated string allocation_id = 6;
+  // // The agents the logs came from.
+  // repeated string agent_id = 7;
+  // // The IDs of the containers or, in the case of k8s, the pod names.
+  // repeated string container_id = 8;
+  // // The rank IDs.
+  // repeated int32 rank_id = 9;
+  // // The text of the log entries.
+  // repeated string log = 10;
+  // // The sources of the log entries.
+  // repeated string source = 11;
+  // // The output streams (e.g. stdout, stderr).
+  // repeated string stdtype = 12;
+  repeated task.v1.TaskLog logs = 1;
+}
+
+// Response to PostTaskLogs
+message PostTaskLogsResponse {}
+
 // Request a count of active tasks by type.
 message GetActiveTasksCountRequest {}
 

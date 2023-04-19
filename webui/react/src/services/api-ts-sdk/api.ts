@@ -6490,6 +6490,26 @@ export interface V1PostSearcherOperationsRequest {
 export interface V1PostSearcherOperationsResponse {
 }
 /**
+ * 
+ * @export
+ * @interface V1PostTaskLogsRequest
+ */
+export interface V1PostTaskLogsRequest {
+    /**
+     * option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {   json_schema: {     required: [ "id", "level", "log", "message", "task_id", "timestamp" ]   } }; // The IDs of the logs. repeated string id = 1; // The timestamps of the logs. repeated google.protobuf.Timestamp timestamp = 2; // The flat version of the log that UIs have shown historically. repeated string message = 3 [deprecated = true]; // The levels of the logs. repeated determined.log.v1.LogLevel level = 4; // The IDs of the tasks. repeated string task_id = 5; // The IDs of the allocations. repeated string allocation_id = 6; // The agents the logs came from. repeated string agent_id = 7; // The IDs of the containers or, in the case of k8s, the pod names. repeated string container_id = 8; // The rank IDs. repeated int32 rank_id = 9; // The text of the log entries. repeated string log = 10; // The sources of the log entries. repeated string source = 11; // The output streams (e.g. stdout, stderr). repeated string stdtype = 12;
+     * @type {Array<V1TaskLog>}
+     * @memberof V1PostTaskLogsRequest
+     */
+    logs?: Array<V1TaskLog>;
+}
+/**
+ * 
+ * @export
+ * @interface V1PostTaskLogsResponse
+ */
+export interface V1PostTaskLogsResponse {
+}
+/**
  * Create a batch of trial profiler metrics.
  * @export
  * @interface V1PostTrialProfilerMetricsBatchRequest
@@ -8592,6 +8612,85 @@ export interface V1Task {
      * @memberof V1Task
      */
     allocations?: Array<V1Allocation>;
+}
+/**
+ * 
+ * @export
+ * @interface V1TaskLog
+ */
+export interface V1TaskLog {
+    /**
+     * Unique ID of task log.
+     * @type {number}
+     * @memberof V1TaskLog
+     */
+    id: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    stringId?: string;
+    /**
+     * Unique ID of associated task.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    taskId: string;
+    /**
+     * Unique ID of associated allocation.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    allocationId?: string;
+    /**
+     * Unique ID of associated agent.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    agentId?: string;
+    /**
+     * Unique ID of associated container.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    containerId?: string;
+    /**
+     * Unique ID of rank.
+     * @type {number}
+     * @memberof V1TaskLog
+     */
+    rankId?: number;
+    /**
+     * The timestamp at which the log occured.
+     * @type {Date}
+     * @memberof V1TaskLog
+     */
+    timestamp: Date;
+    /**
+     * The level of this log.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    level: string;
+    /**
+     * The log.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    log: string;
+    /**
+     * The source of the log.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    source?: string;
+    /**
+     * The std type.
+     * @type {string}
+     * @memberof V1TaskLog
+     */
+    stdtype?: string;
 }
 /**
  * Response to TaskLogsFieldsRequest.
@@ -19402,6 +19501,45 @@ export const JobsApiFetchParamCreator = function (configuration?: Configuration)
     return {
         /**
          * 
+         * @summary Persist the given task logs.
+         * @param {V1PostTaskLogsRequest} body
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postTaskLogs(body: V1PostTaskLogsRequest, options: any = {}): FetchArgs {
+            // verify required parameter 'body' is not null or undefined
+            if (body === null || body === undefined) {
+                throw new RequiredError('body','Required parameter body was null or undefined when calling postTaskLogs.');
+            }
+            const localVarPath = `/api/v1/task-logs`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = { method: 'POST', ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            
+            // authentication BearerToken required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? configuration.apiKey("Authorization")
+                    : configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+            
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            
+            localVarUrlObj.query = { ...localVarUrlObj.query, ...localVarQueryParameter, ...options.query };
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            localVarUrlObj.search = null;
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...options.headers };
+            localVarRequestOptions.body = JSON.stringify(body)
+            
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Stream task logs.
          * @param {string} taskId The id of the task.
          * @param {number} [limit] Limit the number of trial logs. A value of 0 denotes no limit.
@@ -19555,6 +19693,25 @@ export const JobsApiFp = function (configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Persist the given task logs.
+         * @param {V1PostTaskLogsRequest} body
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postTaskLogs(body: V1PostTaskLogsRequest, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<V1PostTaskLogsResponse> {
+            const localVarFetchArgs = JobsApiFetchParamCreator(configuration).postTaskLogs(body, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
          * @summary Stream task logs.
          * @param {string} taskId The id of the task.
          * @param {number} [limit] Limit the number of trial logs. A value of 0 denotes no limit.
@@ -19616,6 +19773,16 @@ export const JobsApiFactory = function (configuration?: Configuration, fetch?: F
     return {
         /**
          * 
+         * @summary Persist the given task logs.
+         * @param {V1PostTaskLogsRequest} body
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postTaskLogs(body: V1PostTaskLogsRequest, options?: any) {
+            return JobsApiFp(configuration).postTaskLogs(body, options)(fetch, basePath);
+        },
+        /**
+         * 
          * @summary Stream task logs.
          * @param {string} taskId The id of the task.
          * @param {number} [limit] Limit the number of trial logs. A value of 0 denotes no limit.
@@ -19658,6 +19825,18 @@ export const JobsApiFactory = function (configuration?: Configuration, fetch?: F
  * @extends {BaseAPI}
  */
 export class JobsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Persist the given task logs.
+     * @param {V1PostTaskLogsRequest} body
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof JobsApi
+     */
+    public postTaskLogs(body: V1PostTaskLogsRequest, options?: any) {
+        return JobsApiFp(this.configuration).postTaskLogs(body, options)(this.fetch, this.basePath)
+    }
+    
     /**
      * 
      * @summary Stream task logs.
@@ -23961,6 +24140,45 @@ export const TasksApiFetchParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Persist the given task logs.
+         * @param {V1PostTaskLogsRequest} body
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postTaskLogs(body: V1PostTaskLogsRequest, options: any = {}): FetchArgs {
+            // verify required parameter 'body' is not null or undefined
+            if (body === null || body === undefined) {
+                throw new RequiredError('body','Required parameter body was null or undefined when calling postTaskLogs.');
+            }
+            const localVarPath = `/api/v1/task-logs`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = { method: 'POST', ...options };
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            
+            // authentication BearerToken required
+            if (configuration && configuration.apiKey) {
+                const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+                    ? configuration.apiKey("Authorization")
+                    : configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = localVarApiKeyValue;
+            }
+            
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            
+            localVarUrlObj.query = { ...localVarUrlObj.query, ...localVarQueryParameter, ...options.query };
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            localVarUrlObj.search = null;
+            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...options.headers };
+            localVarRequestOptions.body = JSON.stringify(body)
+            
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Stream task logs.
          * @param {string} taskId The id of the task.
          * @param {number} [limit] Limit the number of trial logs. A value of 0 denotes no limit.
@@ -24169,6 +24387,25 @@ export const TasksApiFp = function (configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Persist the given task logs.
+         * @param {V1PostTaskLogsRequest} body
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postTaskLogs(body: V1PostTaskLogsRequest, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<V1PostTaskLogsResponse> {
+            const localVarFetchArgs = TasksApiFetchParamCreator(configuration).postTaskLogs(body, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
          * @summary Stream task logs.
          * @param {string} taskId The id of the task.
          * @param {number} [limit] Limit the number of trial logs. A value of 0 denotes no limit.
@@ -24258,6 +24495,16 @@ export const TasksApiFactory = function (configuration?: Configuration, fetch?: 
         },
         /**
          * 
+         * @summary Persist the given task logs.
+         * @param {V1PostTaskLogsRequest} body
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postTaskLogs(body: V1PostTaskLogsRequest, options?: any) {
+            return TasksApiFp(configuration).postTaskLogs(body, options)(fetch, basePath);
+        },
+        /**
+         * 
          * @summary Stream task logs.
          * @param {string} taskId The id of the task.
          * @param {number} [limit] Limit the number of trial logs. A value of 0 denotes no limit.
@@ -24332,6 +24579,18 @@ export class TasksApi extends BaseAPI {
      */
     public getTasks(options?: any) {
         return TasksApiFp(this.configuration).getTasks(options)(this.fetch, this.basePath)
+    }
+    
+    /**
+     * 
+     * @summary Persist the given task logs.
+     * @param {V1PostTaskLogsRequest} body
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TasksApi
+     */
+    public postTaskLogs(body: V1PostTaskLogsRequest, options?: any) {
+        return TasksApiFp(this.configuration).postTaskLogs(body, options)(this.fetch, this.basePath)
     }
     
     /**

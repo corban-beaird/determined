@@ -285,7 +285,7 @@ func mockLogAcceptor(t *testing.T, port int) (chan model.TaskLog, func()) {
 	require.NoError(t, err, "error starting mock master listener")
 	e.Listener = lis
 	logBuffer := make(chan model.TaskLog)
-	e.POST("/task-logs", func(ctx echo.Context) error {
+	e.POST("/api/v1/task-logs", func(ctx echo.Context) error {
 		body, err := io.ReadAll(ctx.Request().Body)
 		if err != nil {
 			return err
